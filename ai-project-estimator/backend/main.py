@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+# Force reload for bcrypt downgrade
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import api
