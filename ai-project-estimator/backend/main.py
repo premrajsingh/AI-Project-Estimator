@@ -1,4 +1,12 @@
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env from this directory (backend/), not from the shell's CWD — so GEMINI_API_KEY works when
+# you run uvicorn from the repo root or from backend.
+load_dotenv(Path(__file__).resolve().parent / ".env")
+
 from fastapi import FastAPI
+# Force reload for bcrypt downgrade
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import api

@@ -50,22 +50,7 @@ const ReportView = () => {
         }
       } catch (err) {
         console.error(err);
-        // Creating Mock Data if backend fails so UI can still be viewed and reviewed
-        setProject({
-          status: 'completed',
-          github_url: 'https://github.com/mock/auth-service',
-          metrics: { avg_complexity: 8.5, duplication_percentage: 12 },
-          estimations: { predicted_time_days: 14, predicted_cost_dollars: 145000, predicted_effort_hours: 1240 },
-          risks: [
-            { type: 'Legacy Dependency', reason: 'Found deprecated auth-legacy-v2. Poses high security vulnerability.', score: 9 },
-            { type: 'Velocity Drop Detected', reason: 'Team velocity dropped by 15% this sprint.', score: 6 }
-          ],
-          optimizations: [
-            { type: 'Refactor SQL Queries', action: 'Fix N+1 query problem detected in userProfile' },
-            { type: 'Update Testing Framework', action: 'Move to Jest v29' }
-          ],
-          final_report: "## Executive Summary\nProject Omega is largely on track but showing early signs of technical debt in the payment gateway module.\n\nThe estimated timeline has slipped by 4 days due to unforeseen complexity in the legacy authentication service integration. However, frontend velocity is 15% higher than anticipated.\n\nRecommended immediate action: Refactor auth-service logic before Sprint 4 to avoid critical blocking issues."
-        });
+        setError(err.message || 'Failed to fetch project details from the server.');
         setLoading(false);
         clearInterval(interval);
       }

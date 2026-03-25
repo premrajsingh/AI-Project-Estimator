@@ -496,6 +496,40 @@ const ProjectPlanning = () => {
                 </div>
               </div>
             </div>
+
+            {/* AI Generated Blueprint Section - NEW */}
+            <div className="mt-8 bg-white dark:bg-[#0B1120] border border-indigo-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col relative">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[80px]"></div>
+                <div className="bg-indigo-600/10 border-b border-indigo-500/20 px-8 py-6 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-indigo-500/20 p-2 rounded-lg border border-indigo-500/30">
+                            <BrainCircuit className="w-6 h-6 text-indigo-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-black text-indigo-400 tracking-tight uppercase">Neural Project Blueprint</h2>
+                            <p className="text-slate-500 text-xs font-mono uppercase tracking-widest">Architectural Specifications & Roadmap</p>
+                        </div>
+                    </div>
+                    <button className="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all border border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+                        Save Blueprint
+                    </button>
+                </div>
+                
+                <div className="p-10 prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 
+                                prose-headings:text-slate-900 dark:prose-headings:text-white 
+                                prose-h2:text-indigo-400 prose-h2:border-b prose-h2:border-slate-800/50 prose-h2:pb-2 prose-h2:mb-6
+                                prose-strong:text-cyan-400 prose-ul:list-disc prose-li:my-1">
+                    {result.blueprint ? (
+                        <ReactMarkdown>{result.blueprint}</ReactMarkdown>
+                    ) : (
+                        <div className="text-center py-10 text-slate-500 italic">No detailed blueprint generated.</div>
+                    )}
+                </div>
+                
+                <div className="bg-slate-50 dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-800 px-8 py-4 text-center">
+                    <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em]">End of AI Generated Neural Specification • V2.4.0</p>
+                </div>
+            </div>
           </div>
         )}
 
