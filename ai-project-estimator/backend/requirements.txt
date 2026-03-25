@@ -23,7 +23,6 @@ joblib==1.5.3
 mando==0.7.1
 motor==3.7.1
 numpy
-openai
 pandas
 passlib==1.7.4
 pycparser==2.23

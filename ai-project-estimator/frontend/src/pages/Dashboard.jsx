@@ -77,7 +77,7 @@ const Dashboard = () => {
                   type="file"
                   ref={fileInputRef}
                   className="hidden"
-                  accept=".zip"
+                  accept=".zip,.pdf"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       setFile(e.target.files[0]);
@@ -93,7 +93,7 @@ const Dashboard = () => {
                   <span className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 text-center px-4 w-full truncate">
                      {file ? file.name : "Drop Archive"}
                   </span>
-                  {!file && <span className="text-[10px] text-slate-500 mt-1 font-mono">.ZIP Archive</span>}
+                  {!file && <span className="text-[10px] text-slate-500 mt-1 font-mono">.ZIP or .PDF Document</span>}
                 </div>
                 {!file && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>}
               </div>

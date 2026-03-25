@@ -4,6 +4,7 @@ import tempfile
 import zipfile
 from git import Repo
 from radon.complexity import cc_visit
+from pypdf import PdfReader
 
 class MetricsAgent:
     def __init__(self):
@@ -21,6 +22,32 @@ class MetricsAgent:
         }
         
         try:
+            is_pdf = zip_path and zip_path.lower().endswith('.pdf')
+            
+            if is_pdf:
+                print(f"Analyzing PDF document: {zip_path}")
+                try:
+                    reader = PdfReader(zip_path)
+                    text = ""
+                    for i, page in enumerate(reader.pages):
+                        if i >= 10: break # Max 10 pages
+                        text += page.extract_text() + "\n"
+                    
+                    metrics["total_loc"] = len(text.splitlines())
+                    metrics["file_count"] = 1
+                    metrics["top_complex_files"] = [{
+                        "filename": os.path.basename(zip_path),
+                        "complexity": 5.0,
+                        "content": text
+                    }]
+                    # Cleanup the PDF after analysis
+                    try: os.remove(zip_path)
+                    except: pass
+                except Exception as e:
+                    print(f"Error reading PDF: {e}")
+                
+                return metrics
+
             if zip_path and os.path.exists(zip_path):
                 print(f"Extracting {zip_path} to {temp_dir}...")
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
