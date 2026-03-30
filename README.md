@@ -6,6 +6,9 @@
 
 An advanced AI-powered platform for estimating software development effort, cost, and risk. By analyzing GitHub repositories or evaluating project documentation, it generates comprehensive blueprints and financial estimates.
 
+![AI Project Estimator UI](docs/screenshots/app_ui.png)
+
+
 ---
 
 ## ✨ Key Features
