@@ -1,129 +1,102 @@
-# AI Project Estimator
+# 🚀 AI Project Estimator
 
-An AI-powered platform for estimating software development effort, cost, and risk from GitHub repositories or project requirements.
+[![Project License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![Node Version](https://img.shields.io/badge/node-18%2B-green)](https://nodejs.org/)
 
----
-
-## Features
-
-- **Code Analysis** — Analyze any public GitHub repository to get effort, cost, and risk estimates
-- **Idea Estimator** — Describe your project requirements and get an AI-generated development blueprint
-- **Risk Analysis** — Identify technical risks and challenges before development starts
-- **Reports** — Detailed AI-generated reports with timeline, architecture, and tech stack recommendations
+An advanced AI-powered platform for estimating software development effort, cost, and risk. By analyzing GitHub repositories or evaluating project documentation, it generates comprehensive blueprints and financial estimates.
 
 ---
 
-## Quick Start
+## ✨ Key Features
 
-### Prerequisites
+- **🔍 Repo Intelligence** — Analyze public GitHub repositories to extract complex code metrics and effort estimates.
+- **💡 Idea-to-Blueprint** — Transform high-level project ideas into detailed technical requirements and development phases.
+- **⚠️ Risk Mitigation** — Identify potential technical hurdles and architectural risks using AI-driven analysis.
+- **📄 Expert Reports** — Generate professional reports covering timelines, tech stacks, and cost breakdowns.
+
+---
+
+## 🛠 Tech Stack
+
+- **Backend**: FastAPI (Python), Google Gemini AI, MongoDB Atlas.
+- **Frontend**: React (Vite), Tailwind CSS.
+- **ML**: Multi-output regression models for data-driven effort estimation.
+
+---
+
+## 🚀 Getting Started
+
+### 📋 Prerequisites
 - Python 3.10+
 - Node.js 18+
-- MongoDB Atlas account
-- Google Gemini API key
+- MongoDB Atlas Account
+- Google Gemini API Key
 
-### Backend Setup
+### ⚙️ Backend Setup
 
 ```bash
 cd backend
 
-# Create virtual environment
+# Virtual environment setup
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure environment
+# Environment configuration
 cp .env.example .env
-# Edit .env and fill in: GEMINI_API_KEY, MONGODB_URI, JWT_SECRET
+# Fill in GEMINI_API_KEY, MONGODB_URI, JWT_SECRET
 
-# Start server
+# Launch FastAPI
 uvicorn main:app --reload --port 8000
 ```
 
-### Frontend Setup
+### 💻 Frontend Setup
 
 ```bash
 cd frontend
 
-# Install dependencies
+# Install & start
 npm install
-
-# Configure environment
 cp .env.example .env
-# Set VITE_API_URL if your backend is not on localhost:8000
-
-# Start dev server
 npm run dev
 ```
 
 ---
 
-## Environment Variables
+## 📁 Project Architecture
 
-### Backend (`backend/.env`)
-
-| Variable | Required | Description |
-|---|---|---|
-| `GEMINI_API_KEY` | ✅ | Google AI Studio API key |
-| `MONGODB_URI` | ✅ | MongoDB Atlas connection string |
-| `JWT_SECRET` | ✅ | Secret key for JWT tokens (use a long random string) |
-| `GEMINI_MODEL` | Optional | Gemini model name (default: `gemini-2.5-flash-lite`) |
-| `ALLOWED_ORIGINS` | Production | Comma-separated frontend URLs for CORS |
-| `GEMINI_TIMEOUT_SECONDS` | Optional | API timeout (default: `120`) |
-
-### Frontend (`frontend/.env`)
-
-| Variable | Required | Description |
-|---|---|---|
-| `VITE_API_URL` | Production | Backend URL e.g. `https://your-api.railway.app/api/v1` |
-
----
-
-## Project Structure
-
-```
+```bash
 ├── backend/
-│   ├── agents/              # AI agent pipeline
-│   │   ├── orchestrator.py  # Coordinates all agents
-│   │   ├── metrics_agent.py # Code metrics extraction
-│   │   ├── estimation_agent.py # ML + AI effort estimation
-│   │   ├── planning_agent.py   # Idea-to-blueprint AI agent
-│   │   ├── risk_agent.py       # Risk analysis
-│   │   └── report_agent.py     # Final report generation
-│   ├── routes/              # FastAPI route handlers
-│   ├── database/            # MongoDB connection & queries
-│   ├── models/              # ML model (effort_model.pkl)
-│   └── main.py              # App entry point
+│   ├── agents/          # Multi-agent system (orchestrator, metrics, etc.)
+│   ├── routes/          # API endpoints
+│   ├── database/        # Storage layer
+│   └── main.py          # Entry point
 │
 ├── frontend/
 │   └── src/
-│       ├── pages/           # Route-level page components
-│       ├── services/api.js  # API client
-│       └── context/         # React context providers
+│       ├── pages/       # Application views
+│       └── services/    # API integration
 │
-└── machine_learning/        # ML model training scripts
+└── machine_learning/    # Model training and data synthesis
 ```
 
 ---
 
-## Deployment
+## 🌍 Deployment
 
-### Backend (Railway / Render)
-1. Push to GitHub
-2. Create a new service pointing to the `backend/` directory
-3. Set all required environment variables in the platform dashboard
-4. Set `ALLOWED_ORIGINS` to your frontend's deployed URL
-
-### Frontend (Vercel)
-1. Connect your GitHub repo to Vercel
-2. Set the root directory to `frontend/`
-3. Add `VITE_API_URL` pointing to your deployed backend
+- **Backend**: Deploy on Railway or Render (ensure `ALLOWED_ORIGINS` is set).
+- **Frontend**: Deploy on Vercel or Netlify.
 
 ---
 
-## Notes
+## 📝 License
 
-- **GitHub URLs only**: The repository analyzer only supports public GitHub repository URLs
-- **Idea Estimator**: Requires a detailed project description (50+ characters) for meaningful results
-- **ML Model**: The `effort_model.pkl` is a multi-output regression model trained on synthetic project data
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+*Built with ❤️ for the Developer Community.*
+
