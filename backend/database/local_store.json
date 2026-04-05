@@ -1,0 +1,113 @@
+{
+  "projects": {
+    "803c194cdf0c4970b386cada1398a8a6": {
+      "github_url": "https://github.com/premrajsingh/CAweb",
+      "status": "completed",
+      "created_at": "2026-03-29T19:35:57.827805+00:00",
+      "metrics": {
+        "total_loc": 0,
+        "file_count": 0,
+        "avg_complexity": 0.0,
+        "duplication_percentage": 0.0,
+        "functional_points": 0,
+        "top_complex_files": [],
+        "language_breakdown": {},
+        "primary_language": "Unknown"
+      },
+      "estimations": {
+        "predicted_effort_hours": 8,
+        "predicted_time_days": 1,
+        "predicted_cost_inr": 8000,
+        "currency": "INR",
+        "assumed_team_size": 1,
+        "confidence": 0.5,
+        "source": "fallback"
+      },
+      "risks": [],
+      "optimizations": [
+        {
+          "title": "Code Hygiene",
+          "type": "General",
+          "action": "Codebase looks healthy. Maintain test coverage above 80%.",
+          "explanation": "No critical architectural flaws detected from high-level metrics."
+        }
+      ],
+      "final_report": "## 📊 AI Project Health Report\n\n> **Analysis Date:** March 30, 2026 | **Codebase Size:** 0 lines across 0 files | **Primary Language:** Unknown | **Maintainability Grade:** A (Excellent)\n\n---\n\n## 🔧 Code Optimizations\n\nNo complex files detected. Code structure appears lean and manageable.\n\n**📌 General Recommendations:**\n- Average complexity of **0** is Low ✅\n- Code duplication at **0%** — Excellent ✅\n\n---\n\n## 💰 Cost Analysis\n\n### Total Estimated Budget: **₹8.0K**\n\n| Category | Allocation | Estimated Cost |\n|----------|-----------|----------------|\n| 👨‍💻 Development & Engineering | 60% | **₹4.8K** |\n| 🧪 Quality Assurance & Testing | 20% | **₹1.6K** |\n| ☁️ Infrastructure & DevOps | 10% | **₹800** |\n| 📋 Project Management | 10% | **₹800** |\n| **Total** | **100%** | **₹8.0K** |\n\n**💡 Cost Drivers:**\n- Estimated **8 developer hours** at an average blended rate.\n- Team of **1 developer(s)** assumed.\n\n---\n\n## 📅 Project Timeline\n\n### Total Estimated Duration: **1 days** (~0 weeks)\n\n| Phase | Duration | Key Deliverable |\n|-------|----------|-----------------|\n| 🚀 Setup & Planning | 1 day(s) | Tech spec, environment setup, architecture decisions |\n| ⚙️ Core Development | 1 day(s) | Working features, API integrations, core business logic |\n| 🧪 Testing & QA | 1 day(s) | Unit tests, integration tests, bug fixes, code reviews |\n| 📦 Deployment & Handover | 1 day(s) | CI/CD setup, staging → production, documentation |\n\n**⚠️ Timeline Risks:**\n- Add a **15–20% buffer** to account for scope creep and unforeseen blockers.\n- Very short timeline — ensure requirements are crystal clear before starting.\n- Solo developer — consider the risk of single point of failure; code reviews and backups are essential.\n\n---\n\n## 🐛 Bugs & Security Analysis\n\n✅ No files analyzed for bug detection in this run.\n\n**🔒 General Security Checklist:**\n- [ ] All API keys stored in environment variables (not hardcoded)\n- [ ] Input validation on all user-facing endpoints\n- [ ] Authentication & authorization on protected routes\n- [ ] Rate limiting implemented on public APIs\n- [ ] Dependencies audited for known CVEs (`npm audit` / `pip-audit` / language equivalent)\n\n---\n\n## 💡 Additional Insights & Recommendations\n\n**Project Health Summary:**\n- 📁 **Codebase:** 0 lines across 0 file(s) | ~0 LOC/file average\n- 🗂️ **Primary Language:** Unknown\n- ⚡ **Complexity:** 0 avg cyclomatic complexity (Low ✅)\n- 🔁 **Duplication:** 0% (Excellent ✅)\n- 🎯 **Maintainability Grade:** A (Excellent)\n\n**Actionable Next Steps:**\n1. 🧪 **Increase test coverage** — aim for ≥80% unit test coverage using framework-appropriate test suite.\n2. 📖 **Document public APIs** — add docstrings / JSDoc / XML doc comments to all exported functions.\n3. 🚀 **Set up CI/CD pipeline** — automate testing and deployment to catch regressions early.\n",
+      "_id": "803c194cdf0c4970b386cada1398a8a6",
+      "design_result": {
+        "valid": true,
+        "errors": [],
+        "warnings": []
+      },
+      "health_preliminary": {
+        "score": 95,
+        "status": "🟢 Healthy",
+        "label": "HEALTHY",
+        "breakdown": {
+          "clarity": 25,
+          "code_quality": 25,
+          "feasibility": 20,
+          "risk": 25
+        }
+      },
+      "code_review": {
+        "optimizations": [
+          {
+            "title": "Code Hygiene",
+            "type": "General",
+            "action": "Codebase looks healthy. Maintain test coverage above 80%.",
+            "explanation": "No critical architectural flaws detected from high-level metrics."
+          }
+        ]
+      },
+      "health": {
+        "score": 95,
+        "status": "🟢 Healthy",
+        "label": "HEALTHY",
+        "breakdown": {
+          "clarity": 25,
+          "code_quality": 25,
+          "feasibility": 20,
+          "risk": 25
+        }
+      }
+    },
+    "fceb42cf315f44c6a9dee2691d2f50ae": {
+      "github_url": "https://github.com/premrajsingh/StudifyHub",
+      "status": "processing",
+      "created_at": "2026-04-05T05:28:35.252321+00:00",
+      "metrics": {},
+      "estimations": {},
+      "risks": [],
+      "optimizations": [],
+      "final_report": "",
+      "_id": "fceb42cf315f44c6a9dee2691d2f50ae"
+    },
+    "3d27aef171cb4798b17953af84ce7071": {
+      "github_url": "https://github.com/premrajsingh/StudifyHub",
+      "status": "processing",
+      "created_at": "2026-04-05T05:28:35.253241+00:00",
+      "metrics": {},
+      "estimations": {},
+      "risks": [],
+      "optimizations": [],
+      "final_report": "",
+      "_id": "3d27aef171cb4798b17953af84ce7071"
+    }
+  },
+  "users": {},
+  "plannings": {
+    "946c09b786b0441f8b34da37ee8f5722": {
+      "team_size": 1,
+      "experience": "Intermediate",
+      "description": "User Features\r\nUser Registration & Login (Email, Google, OTP)\r\nProfile Management (name, address, orders)\r\nProduct Browsing (categories, filters, search)\r\nProduct Details Page (images, price, description, reviews)\r\nAdd to Cart / Remove from Cart\r\nWishlist\r\nCheckout System\r\nOrder Tracking\r\nReviews & Ratings\r\n🛍️ Product Features\r\nProduct Listing (title, price, images, stock)\r\nCategories & Subcategories\r\nFilters (price, brand, rating)\r\nSearch functionality (important for UX)\r\n💳 Payment Features\r\nMultiple Payment Options:\r\nUPI\r\nCredit/Debit Card\r\nNet Banking\r\nCash on Delivery (COD)\r\nPayment Gateway Integration (like Razorpay, Stripe)\r\n📦 Order Management\r\nPlace Order\r\nCancel / Return Order\r\nOrder History\r\nInvoice Generation\r\n🧑‍💼 Admin Panel\r\nDashboard (sales, users, analytics)\r\nManage Products (Add/Edit/Delete)\r\nManage Orders\r\nManage Users\r\nManage Coupons & Discounts",
+      "expected_days": 30,
+      "code_snippet": "",
+      "status": "failed",
+      "created_at": "2026-04-03T08:48:17.493879+00:00",
+      "estimation": null,
+      "_id": "946c09b786b0441f8b34da37ee8f5722",
+      "error_message": "Client error '429 Too Many Requests' for url 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429"
+    }
+  }
+}
