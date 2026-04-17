@@ -137,6 +137,7 @@ const ReportView = () => {
   const generatedDate = project.created_at ? new Date(project.created_at).toLocaleDateString() : new Date().toLocaleDateString();
 
   return (
+    <>
     <div className="max-w-[1600px] mx-auto pb-20 animate-fade-in text-slate-800 dark:text-slate-200">
 
       {/* Header */}
@@ -567,8 +568,8 @@ const ReportView = () => {
           <div className="p-8 lg:p-10">
             <div
               className="report-body prose prose-slate dark:prose-invert max-w-none
-                prose-h2:text-xl prose-h2:font-black prose-h2:text-slate-900 dark:prose-h2:text-white prose-h2:border-b prose-h2:border-slate-200 dark:prose-h2:border-slate-700 prose-h2:pb-2 prose-h2:mt-8 prose-h2:mb-4
-                prose-h3:text-base prose-h3:font-bold prose-h3:text-indigo-600 dark:prose-h3:text-indigo-400 prose-h3:mt-5 prose-h3:mb-2
+                prose-h2:text-2xl prose-h2:font-black prose-h2:text-slate-900 dark:prose-h2:text-white prose-h2:border-b-2 prose-h2:border-slate-200 dark:prose-h2:border-slate-700 prose-h2:pb-3 prose-h2:mt-10 prose-h2:mb-6
+                prose-h3:text-xl prose-h3:font-black prose-h3:text-indigo-700 dark:prose-h3:text-indigo-300 prose-h3:mt-8 prose-h3:mb-4 prose-h3:bg-indigo-50 dark:prose-h3:bg-indigo-500/10 prose-h3:px-4 prose-h3:py-2.5 prose-h3:rounded-xl prose-h3:border-l-4 prose-h3:border-indigo-500 prose-h3:shadow-sm
                 prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-p:text-sm
                 prose-li:text-slate-600 dark:prose-li:text-slate-300 prose-li:text-sm prose-li:my-1
                 prose-strong:text-slate-900 dark:prose-strong:text-white
@@ -594,6 +595,7 @@ const ReportView = () => {
           </div>
         </div>
       )}
+    </div>
 
       {/* Code Fix Modal */}
       {isModalOpen && selectedOptimization && (
@@ -747,7 +749,7 @@ const ReportView = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -85,3 +85,13 @@ export const connectGithubUrl = () => {
   const baseUrl = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:8000';
   return `${baseUrl}/api/v1/auth/github?token=${token}`;
 };
+
+export const disconnectGithubRepos = async () => {
+  const response = await apiClient.delete('/github/disconnect');
+  return response.data;
+};
+
+export const connectGithubManual = async (username, token) => {
+  const response = await apiClient.post('/auth/github/manual', { username, token });
+  return response.data;
+};

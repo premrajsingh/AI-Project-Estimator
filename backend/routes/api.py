@@ -16,7 +16,8 @@ import shutil
 
 _active_tasks = set()
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, File, Form, UploadFile, Request
+from fastapi import APIRouter, HTTPException, BackgroundTasks, File, Form, UploadFile, Request, Depends
+from routes.auth import get_current_user
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
@@ -31,6 +32,7 @@ from database.mongo import (
     create_planning, get_planning,
     delete_project, delete_all_projects,
     delete_planning, delete_all_plannings,
+    is_admin_user,
 )
 
 router = APIRouter()
@@ -163,6 +165,7 @@ class PlanningStatusResponse(BaseModel):
 @router.post("/projects/analyze", response_model=ProjectStatusResponse)
 async def analyze_project(
     background_tasks: BackgroundTasks,
+    current_user: dict = Depends(get_current_user),
     github_url: Optional[str]        = Form(None),
     file:       Optional[UploadFile] = File(None),
     code:       Optional[str]        = Form(None),
@@ -185,7 +188,8 @@ async def analyze_project(
 
     try:
         display_name = github_url.strip() if github_url else (file.filename if file else "inline-code")
-        project_id   = await create_project(display_name)
+        user_email   = current_user.get("email")
+        project_id   = await create_project(display_name, user_email=user_email)
 
         zip_path = None
         if file:
@@ -215,21 +219,37 @@ async def analyze_project(
 
 
 @router.get("/projects")
-async def list_projects():
-    return await get_all_projects()
+async def list_projects(current_user: dict = Depends(get_current_user)):
+    user_email = current_user.get("email")
+    return await get_all_projects(user_email=user_email)
 
 
 @router.get("/projects/{project_id}")
-async def get_project_details(project_id: str):
+async def get_project_details(project_id: str, current_user: dict = Depends(get_current_user)):
     project = await get_project(project_id)
     if not project:
         raise HTTPException(404, "Project not found")
+        
+    user_email = current_user.get("email")
+    if user_email and not is_admin_user(user_email):
+        if project.get("user_email") and project.get("user_email") != user_email:
+            raise HTTPException(status_code=403, detail="Access denied")
+            
     project["_id"] = str(project["_id"])
     return project
 
 
 @router.delete("/projects/{project_id}")
-async def remove_project(project_id: str):
+async def remove_project(project_id: str, current_user: dict = Depends(get_current_user)):
+    project = await get_project(project_id)
+    if not project:
+        raise HTTPException(404, "Project not found")
+        
+    user_email = current_user.get("email")
+    if user_email and not is_admin_user(user_email):
+        if project.get("user_email") and project.get("user_email") != user_email:
+            raise HTTPException(status_code=403, detail="Access denied")
+            
     success = await delete_project(project_id)
     if not success:
         raise HTTPException(404, "Project not found or already deleted")
@@ -237,8 +257,9 @@ async def remove_project(project_id: str):
 
 
 @router.delete("/projects")
-async def clear_projects():
-    count = await delete_all_projects()
+async def clear_projects(current_user: dict = Depends(get_current_user)):
+    user_email = current_user.get("email")
+    count = await delete_all_projects(user_email=user_email)
     return {"status": "success", "message": f"Removed {count} projects"}
 
 
@@ -268,6 +289,7 @@ MIN_DESC_LENGTH = 50
 @router.post("/planning/estimate", response_model=PlanningStatusResponse)
 async def estimate_planning(
     background_tasks: BackgroundTasks,
+    current_user: dict = Depends(get_current_user),
     team_size:     Optional[int]         = Form(1),
     experience:    Optional[str]         = Form("Intermediate"),
     description:   Optional[str]         = Form(None),
@@ -303,7 +325,8 @@ async def estimate_planning(
             "expected_days": expected_days,
             "code_snippet":  (code_snippet or "").strip(),
         }
-        planning_id = await create_planning(data)
+        user_email = current_user.get("email")
+        planning_id = await create_planning(data, user_email=user_email)
 
         file_path = None
         file_type = None
@@ -340,25 +363,38 @@ async def estimate_planning(
 
 
 @router.get("/planning")
-async def list_plannings():
-    return await get_all_plannings()
+async def list_plannings(current_user: dict = Depends(get_current_user)):
+    user_email = current_user.get("email")
+    return await get_all_plannings(user_email=user_email)
 
 
 @router.get("/planning/{planning_id}")
-async def get_planning_details(planning_id: str):
+async def get_planning_details(planning_id: str, current_user: dict = Depends(get_current_user)):
     planning = await get_planning(planning_id)
     if not planning:
         raise HTTPException(404, "Planning not found")
+        
+    user_email = current_user.get("email")
+    if user_email and not is_admin_user(user_email):
+        if planning.get("user_email") and planning.get("user_email") != user_email:
+            raise HTTPException(status_code=403, detail="Access denied")
+            
     planning["_id"] = str(planning["_id"])
     return planning
 
 
 @router.get("/planning/{planning_id}/health")
-async def get_planning_health(planning_id: str):
+async def get_planning_health(planning_id: str, current_user: dict = Depends(get_current_user)):
     """Quick health score shortcut — useful for dashboard widgets."""
     planning = await get_planning(planning_id)
     if not planning:
         raise HTTPException(404, "Planning not found")
+        
+    user_email = current_user.get("email")
+    if user_email and not is_admin_user(user_email):
+        if planning.get("user_email") and planning.get("user_email") != user_email:
+            raise HTTPException(status_code=403, detail="Access denied")
+            
     health = planning.get("health")
     if not health:
         raise HTTPException(202, "Health score not yet computed.")
@@ -366,7 +402,16 @@ async def get_planning_health(planning_id: str):
 
 
 @router.delete("/planning/{planning_id}")
-async def remove_planning(planning_id: str):
+async def remove_planning(planning_id: str, current_user: dict = Depends(get_current_user)):
+    planning = await get_planning(planning_id)
+    if not planning:
+        raise HTTPException(404, "Planning not found")
+        
+    user_email = current_user.get("email")
+    if user_email and not is_admin_user(user_email):
+        if planning.get("user_email") and planning.get("user_email") != user_email:
+            raise HTTPException(status_code=403, detail="Access denied")
+            
     success = await delete_planning(planning_id)
     if not success:
         raise HTTPException(404, "Planning not found or already deleted")
@@ -374,6 +419,7 @@ async def remove_planning(planning_id: str):
 
 
 @router.delete("/planning")
-async def clear_plannings():
-    count = await delete_all_plannings()
+async def clear_plannings(current_user: dict = Depends(get_current_user)):
+    user_email = current_user.get("email")
+    count = await delete_all_plannings(user_email=user_email)
     return {"status": "success", "message": f"Removed {count} plannings"}

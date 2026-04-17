@@ -5,7 +5,7 @@ from fastapi.responses import RedirectResponse
 from typing import List, Optional
 from pydantic import BaseModel
 
-from database.mongo import update_user_github_info, get_user_by_email
+from database.mongo import update_user_github_info, get_user_by_email, remove_user_github_info
 from .auth import get_current_user, ALGORITHM, SECRET_KEY
 import jwt
 
@@ -25,6 +25,10 @@ class GitHubRepo(BaseModel):
     language: Optional[str] = None
     stargazers_count: int
     updated_at: str
+
+class GitHubManualConnect(BaseModel):
+    username: str
+    token: str
 
 @router.get("/auth/github")
 async def github_login(token: str):
@@ -123,3 +127,38 @@ async def list_github_repos(current_user: dict = Depends(get_current_user)):
         )
         for r in repos
     ]
+
+@router.delete("/github/disconnect")
+async def disconnect_github(current_user: dict = Depends(get_current_user)):
+    """Disconnect GitHub account."""
+    email = current_user.get("email")
+    if not email:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    success = await remove_user_github_info(email)
+    if success:
+        return {"message": "GitHub disconnected"}
+    raise HTTPException(status_code=500, detail="Failed to disconnect GitHub")
+
+@router.post("/auth/github/manual")
+async def connect_github_manual(data: GitHubManualConnect, current_user: dict = Depends(get_current_user)):
+    """Connect GitHub using a manually provided token (bypassing OAuth session)."""
+    email = current_user.get("email")
+    if not email:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    # Verify the token works
+    user_resp = requests.get(
+        "https://api.github.com/user",
+        headers={"Authorization": f"token {data.token}"}
+    )
+    if not user_resp.ok:
+        raise HTTPException(status_code=400, detail="Invalid GitHub Token or Password")
+        
+    github_user = user_resp.json()
+    github_username = github_user.get("login")
+    
+    # Save the token
+    success = await update_user_github_info(email, data.token, github_username)
+    if success:
+        return {"message": "GitHub connected successfully", "username": github_username}
+    raise HTTPException(status_code=500, detail="Failed to save GitHub connection")

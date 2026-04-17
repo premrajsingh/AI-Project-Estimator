@@ -22,6 +22,11 @@ _use_local_store = False
 def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
+def is_admin_user(email: str) -> bool:
+    if not email: return False
+    admins = [a.strip() for a in os.getenv("ADMIN_EMAILS", "").split(",")]
+    return email in admins
+
 
 def _json_default(o):
     if isinstance(o, datetime):
@@ -67,10 +72,11 @@ client = _mongo_client()
 database = client.ai_estimator
 project_collection = database.get_collection("projects")
 
-async def create_project(github_url: str) -> str:
+async def create_project(github_url: str, user_email: str = None) -> str:
     """Create a new project document and return its ID."""
     project = {
         "github_url": github_url,
+        "user_email": user_email,
         "status": "processing",
         "created_at": _utcnow(),
         "metrics": {},
@@ -233,6 +239,31 @@ async def update_user_github_info(email: str, github_token: str, github_username
         print(f"Failed to update GitHub info for {email}: {e}")
         return False
 
+async def remove_user_github_info(email: str) -> bool:
+    """Remove GitHub OAuth token and username for the user."""
+    try:
+        update_data = {
+            "github_token": None,
+            "github_username": None,
+            "github_connected_at": None
+        }
+        if _use_local_store:
+            store = _read_local_store()
+            for uid, u in store["users"].items():
+                if u.get("email") == email:
+                    u.update(update_data)
+                    store["users"][uid] = u
+                    _write_local_store(store)
+                    return True
+            return False
+
+        result = await user_collection.update_one({"email": email}, {"$set": update_data})
+        return result.modified_count > 0 or result.matched_count > 0
+    except Exception as e:
+        _mark_local_store(e)
+        print(f"Failed to remove GitHub info for {email}: {e}")
+        return False
+
 async def update_user_password(email: str, new_hashed_password: str) -> bool:
     """Update an existing user's hashed password."""
     try:
@@ -256,10 +287,11 @@ async def update_user_password(email: str, new_hashed_password: str) -> bool:
 # Planning-related database functions
 planning_collection = database.get_collection("plannings")
 
-async def create_planning(planning_data: dict) -> str:
+async def create_planning(planning_data: dict, user_email: str = None) -> str:
     """Create a new planning estimation document and return its ID."""
     planning = {
         **planning_data,
+        "user_email": user_email,
         "status": "processing",
         "created_at": _utcnow(),
         "estimation": None
@@ -322,15 +354,20 @@ async def get_planning(planning_id: str) -> dict:
         return None
 
 
-async def get_all_projects(limit: int = 50) -> list:
+async def get_all_projects(user_email: str = None, limit: int = 50) -> list:
     """Retrieve all projects, newest first."""
     if _use_local_store:
         store = _read_local_store()
         projects = list(store["projects"].values())
+        if user_email and not is_admin_user(user_email):
+            projects = [p for p in projects if p.get("user_email") == user_email]
         projects.sort(key=lambda p: p.get("created_at", ""), reverse=True)
         return projects[:limit]
     try:
-        cursor = project_collection.find({}).sort("created_at", -1).limit(limit)
+        query = {}
+        if user_email and not is_admin_user(user_email):
+            query["user_email"] = user_email
+        cursor = project_collection.find(query).sort("created_at", -1).limit(limit)
         projects = []
         async for p in cursor:
             p["_id"] = str(p["_id"])
@@ -342,15 +379,20 @@ async def get_all_projects(limit: int = 50) -> list:
         return []
 
 
-async def get_all_plannings(limit: int = 50) -> list:
+async def get_all_plannings(user_email: str = None, limit: int = 50) -> list:
     """Retrieve all planning estimations, newest first."""
     if _use_local_store:
         store = _read_local_store()
         plannings = list(store["plannings"].values())
+        if user_email and not is_admin_user(user_email):
+            plannings = [p for p in plannings if p.get("user_email") == user_email]
         plannings.sort(key=lambda p: p.get("created_at", ""), reverse=True)
         return plannings[:limit]
     try:
-        cursor = planning_collection.find({}).sort("created_at", -1).limit(limit)
+        query = {}
+        if user_email and not is_admin_user(user_email):
+            query["user_email"] = user_email
+        cursor = planning_collection.find(query).sort("created_at", -1).limit(limit)
         plannings = []
         async for p in cursor:
             p["_id"] = str(p["_id"])
@@ -383,16 +425,24 @@ async def delete_project(project_id: str) -> bool:
         return False
 
 
-async def delete_all_projects() -> int:
+async def delete_all_projects(user_email: str = None) -> int:
     """Delete all projects."""
     if _use_local_store:
         store = _read_local_store()
-        count = len(store["projects"])
-        store["projects"] = {}
+        if user_email and not is_admin_user(user_email):
+            keys_to_del = [k for k, v in store["projects"].items() if v.get("user_email") == user_email]
+            for k in keys_to_del: del store["projects"][k]
+            count = len(keys_to_del)
+        else:
+            count = len(store["projects"])
+            store["projects"] = {}
         _write_local_store(store)
         return count
     try:
-        result = await project_collection.delete_many({})
+        query = {}
+        if user_email and not is_admin_user(user_email):
+            query["user_email"] = user_email
+        result = await project_collection.delete_many(query)
         return result.deleted_count
     except Exception as e:
         _mark_local_store(e)
@@ -418,16 +468,24 @@ async def delete_planning(planning_id: str) -> bool:
         return False
 
 
-async def delete_all_plannings() -> int:
+async def delete_all_plannings(user_email: str = None) -> int:
     """Delete all plannings."""
     if _use_local_store:
         store = _read_local_store()
-        count = len(store["plannings"])
-        store["plannings"] = {}
+        if user_email and not is_admin_user(user_email):
+            keys_to_del = [k for k, v in store["plannings"].items() if v.get("user_email") == user_email]
+            for k in keys_to_del: del store["plannings"][k]
+            count = len(keys_to_del)
+        else:
+            count = len(store["plannings"])
+            store["plannings"] = {}
         _write_local_store(store)
         return count
     try:
-        result = await planning_collection.delete_many({})
+        query = {}
+        if user_email and not is_admin_user(user_email):
+            query["user_email"] = user_email
+        result = await planning_collection.delete_many(query)
         return result.deleted_count
     except Exception as e:
         _mark_local_store(e)

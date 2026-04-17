@@ -9,7 +9,7 @@ import {
   AlertCircle,
   Loader2
 } from 'lucide-react';
-import { getGithubRepos, connectGithubUrl } from '../services/api';
+import { getGithubRepos, connectGithubUrl, disconnectGithubRepos, connectGithubManual } from '../services/api';
 
 const Repositories = () => {
   const [repos, setRepos] = useState([]);
@@ -17,6 +17,10 @@ const Repositories = () => {
   const [error, setError] = useState(null);
   const [connected, setConnected] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showManualLogin, setShowManualLogin] = useState(false);
+  const [githubUsername, setGithubUsername] = useState('');
+  const [githubToken, setGithubToken] = useState('');
+  const [manualLoading, setManualLoading] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -53,6 +57,35 @@ const Repositories = () => {
     window.location.href = connectGithubUrl();
   };
 
+  const handleDisconnect = async () => {
+    try {
+      await disconnectGithubRepos();
+      setRepos([]);
+      setConnected(false);
+      setError(null);
+    } catch (err) {
+      setError('Failed to disconnect GitHub account.');
+    }
+  };
+
+  const handleManualConnect = async (e) => {
+    e.preventDefault();
+    setManualLoading(true);
+    setError(null);
+    try {
+      await connectGithubManual(githubUsername, githubToken);
+      setConnected(true);
+      setShowManualLogin(false);
+      setGithubUsername('');
+      setGithubToken('');
+      fetchRepos();
+    } catch (err) {
+      setError('Invalid GitHub Username or Token. Connection failed.');
+    } finally {
+      setManualLoading(false);
+    }
+  };
+
   const filteredRepos = repos.filter(repo => 
     repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     repo.full_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -67,13 +100,80 @@ const Repositories = () => {
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Manage your connected version control systems and mapped repositories.</p>
         </div>
-        <button 
-          onClick={handleConnect}
-          className="bg-[#24292F] hover:bg-[#24292F]/80 text-white px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 border border-slate-300 dark:border-slate-700"
-        >
-          <Github className="h-4 w-4" /> {repos.length > 0 ? 'Reconnect GitHub' : 'Connect GitHub'}
-        </button>
+        <div className="flex items-center gap-3">
+          {repos.length > 0 && (
+            <button 
+              onClick={handleDisconnect}
+              className="bg-red-50 hover:bg-red-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 border border-red-200 dark:border-rose-500/20"
+            >
+              Remove GitHub
+            </button>
+          )}
+          <button 
+            onClick={() => setShowManualLogin(!showManualLogin)}
+            className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg font-medium transition-all flex border border-slate-300 dark:border-slate-700"
+          >
+            Manual Login
+          </button>
+          <button 
+            onClick={handleConnect}
+            className="bg-[#24292F] hover:bg-[#24292F]/80 text-white px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 border border-slate-300 dark:border-slate-700"
+          >
+            <Github className="h-4 w-4" /> {repos.length > 0 ? 'Connect OAuth' : 'Connect GitHub'}
+          </button>
+        </div>
       </div>
+
+      {showManualLogin && (
+        <div className="mb-6 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-lg animate-fade-in">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Manual GitHub Login</h2>
+          <p className="text-slate-500 text-sm mb-6">
+            Bypass browser sessions by directly linking a specific account. 
+            <b> Note: GitHub requires a Personal Access Token (PAT) for API login</b> in place of a standard password.
+          </p>
+          <form onSubmit={handleManualConnect} className="space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">GitHub Username / ID</label>
+              <input 
+                type="text" 
+                required
+                value={githubUsername}
+                onChange={(e) => setGithubUsername(e.target.value)}
+                placeholder="e.g. johndoe"
+                className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password or PAT Token</label>
+              <input 
+                type="password" 
+                required
+                value={githubToken}
+                onChange={(e) => setGithubToken(e.target.value)}
+                placeholder="ghp_*******************"
+                className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-slate-100"
+              />
+            </div>
+            <div className="pt-4 flex gap-3">
+              <button 
+                type="submit"
+                disabled={manualLoading}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25"
+              >
+                {manualLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                Secure Login
+              </button>
+              <button 
+                type="button"
+                onClick={() => setShowManualLogin(false)}
+                className="px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {connected && (
         <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3 text-emerald-600 dark:text-emerald-400">

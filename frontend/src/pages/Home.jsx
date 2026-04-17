@@ -69,6 +69,9 @@ const Home = () => {
             <span className="text-xl font-bold text-white tracking-tight">AI Project Estimator</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link to="/admin/login" className="text-sm font-bold text-red-500 hover:text-red-400 transition-colors hidden sm:flex items-center gap-1 uppercase tracking-widest border border-red-500/20 bg-red-500/10 px-3 py-1.5 rounded-lg">
+              <Shield className="h-3 w-3" /> Admin
+            </Link>
             <Link to="/login" className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block">
               Log in
             </Link>
@@ -232,8 +235,11 @@ const Home = () => {
       </div>
       
       {/* Simple Footer */}
-      <footer className="border-t border-slate-800 py-12 text-center text-slate-500 text-sm">
+      <footer className="border-t border-slate-800 py-12 text-center text-slate-500 text-sm flex flex-col items-center justify-center gap-4">
         <p>© 2026 AI Project Analyst. Built for the modern engineering team.</p>
+        <Link to="/admin/login" className="flex items-center gap-1.5 text-slate-600 hover:text-indigo-400 transition-colors uppercase tracking-widest text-[10px] font-bold">
+           <Shield className="h-3 w-3" /> Admin Portal
+        </Link>
       </footer>
     </div>
   );

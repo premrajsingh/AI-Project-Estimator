@@ -5,7 +5,7 @@ import jwt
 from datetime import datetime, timedelta
 import os
 
-from database.mongo import create_user, get_user_by_email, update_user_password
+from database.mongo import create_user, get_user_by_email, update_user_password, is_admin_user
 
 router = APIRouter()
 
@@ -105,6 +105,35 @@ async def register_user(user: UserCreate):
 
 @router.post("/login", response_model=Token)
 async def login_user(user: UserLogin):
+    db_user = await get_user_by_email(user.email)
+    if not db_user or not verify_password(user.password, db_user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": db_user["email"], "user_id": db_user["_id"]}, expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user": {"name": db_user["name"], "email": db_user["email"]}
+    }
+
+@router.post("/admin/login", response_model=Token)
+async def admin_login_user(user: UserLogin):
+    """Secure endpoint strictly for administrators."""
+    # Check if the requested email is actually configured as an admin in .env
+    if not is_admin_user(user.email):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access Denied: Not a system administrator",
+        )
+
     db_user = await get_user_by_email(user.email)
     if not db_user or not verify_password(user.password, db_user["hashed_password"]):
         raise HTTPException(
