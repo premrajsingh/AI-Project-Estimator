@@ -1,4 +1,3 @@
 features=total_loc,file_count,avg_complexity,duplication_percentage,team_size,functional_points
 targets=actual_effort_hours,actual_time_days,actual_cost_inr
 currency=INR
-rate_basis=indian_market_v3

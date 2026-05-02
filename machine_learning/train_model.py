@@ -7,7 +7,12 @@ from sklearn.metrics import mean_absolute_error, r2_score
 import joblib
 import os
 
-def generate_and_train(num_samples=3000, output_path='/home/claude/project/backend/models/effort_model.pkl'):
+def generate_and_train(num_samples=3000, output_path=None):
+    if output_path is None:
+        # Default to backend/models directory relative to this script
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        output_path = os.path.join(base_dir, 'backend', 'models', 'effort_model.pkl')
+
     np.random.seed(42)
 
     print("Generating enhanced synthetic training data...")

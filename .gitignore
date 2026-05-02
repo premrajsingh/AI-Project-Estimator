@@ -24,7 +24,7 @@ dist/
 *.local
 
 # ── ML Model (large binary — store in cloud storage) ─────────────────────────
-backend/models/*.pkl
+# backend/models/*.pkl
 
 # ── Uploads (user data — store in cloud storage) ─────────────────────────────
 backend/uploads/
